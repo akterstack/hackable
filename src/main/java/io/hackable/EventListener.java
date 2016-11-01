@@ -1,7 +1,6 @@
 package io.hackable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class EventListener {
@@ -16,7 +15,12 @@ public class EventListener {
     }
 
     public static void on(String eventName, Class<? extends Hackable> hackableClass, EventHandler eventHandler) {
-
+        Map<String, EventHandler> namedHandlers = handlers.get(hackableClass);
+        if(namedHandlers == null) {
+            namedHandlers = new HashMap<>();
+            handlers.put(hackableClass, namedHandlers);
+        }
+        namedHandlers.put(eventName, eventHandler);
     }
 
     public static void trigger(String eventName, Class<? extends Hackable> eventContextClass, Object eventData) {
