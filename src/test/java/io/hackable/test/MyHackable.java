@@ -8,7 +8,7 @@ import java.util.Collections;
 public class MyHackable implements Hackable {
 
     {
-        EventListener.on("created", MyHackable.class, event -> System.out.println(event.data()));
+        EventListener.on("created", getClass(), event -> System.out.println(event.data()));
     }
 
     public void create() {

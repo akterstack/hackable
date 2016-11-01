@@ -1,10 +1,11 @@
 package io.hackable.test;
 
-public class Test {
+import org.junit.Test;
 
-    @org.junit.Test
+public class TestOne {
+
+    @Test
     public void test() {
-        System.out.println(546);
         MyHackable myHackable = new MyHackable();
         myHackable.create();
     }
