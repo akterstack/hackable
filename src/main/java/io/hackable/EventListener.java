@@ -24,7 +24,7 @@ public class EventListener {
     }
 
     public static void trigger(String eventName, Class<? extends Hackable> eventContextClass, Object eventData) {
-        Event event = new Event(eventName, eventData);
+        Event<Object> event = new Event<>(eventName, eventData);
         Map<String, EventHandler> namedHandlers = handlers.get(eventContextClass);
         EventHandler handler = namedHandlers.get(eventName);
         handler.handle(event);

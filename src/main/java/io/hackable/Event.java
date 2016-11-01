@@ -1,12 +1,20 @@
 package io.hackable;
 
-public class Event {
+public class Event<T> {
 
     private String name;
-    private Object data;
+    private T data;
 
-    public Event(String name, Object data) {
+    public Event(String name, T data) {
         this.name = name;
         this.data = data;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public T data() {
+        return data;
     }
 }
