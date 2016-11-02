@@ -6,4 +6,8 @@ public interface Hackable {
         EventListener.trigger(eventName, this.getClass(), eventData);
     }
 
+    default void trigger(String eventName, Class<? extends Hackable> eventContextClass, Object eventData) {
+        EventListener.trigger(eventName, eventContextClass, eventData);
+    }
+
 }

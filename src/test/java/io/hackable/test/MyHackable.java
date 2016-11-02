@@ -9,6 +9,7 @@ public class MyHackable implements Hackable {
 
     {
         EventListener.on("created", getClass(), event -> System.out.println(event.data()));
+        EventListener.on("created", event -> System.out.println(event.data()));
     }
 
     public void create() {

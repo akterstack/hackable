@@ -1,33 +1,48 @@
 package io.hackable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EventListener {
 
+    private static final Class<? extends Hackable> GLOBAL_CONTEXT = Hackable.class;
+
     /* no way to initialize */
     private EventListener(){}
 
-    private static Map<Class<? extends Hackable>, Map<String, EventHandler>> handlers = new HashMap<>();
+    private static Map<String, List<EventHandler>> mapOfHandlerHost = new HashMap<>();
 
     public static void on(String eventName, EventHandler eventHandler) {
-        on(eventName, Hackable.class, eventHandler);
+        on(eventName, GLOBAL_CONTEXT, eventHandler);
     }
 
     public static void on(String eventName, Class<? extends Hackable> hackableClass, EventHandler eventHandler) {
-        Map<String, EventHandler> namedHandlers = handlers.get(hackableClass);
-        if(namedHandlers == null) {
-            namedHandlers = new HashMap<>();
-            handlers.put(hackableClass, namedHandlers);
+        String hostKey = eventHandlerHostKey(hackableClass, eventName);
+        List<EventHandler> existingHandlers = mapOfHandlerHost.get(hostKey);
+        if(existingHandlers == null) {
+            existingHandlers = new ArrayList<>();
+            mapOfHandlerHost.put(hostKey, existingHandlers);
         }
-        namedHandlers.put(eventName, eventHandler);
+        existingHandlers.add(eventHandler);
     }
 
-    public static void trigger(String eventName, Class<? extends Hackable> eventContextClass, Object eventData) {
+    public static <T> void trigger(String eventName, T eventData) {
+        trigger(eventName, GLOBAL_CONTEXT, eventData);
+    }
+
+    public static <T> void trigger(String eventName, Class<? extends Hackable> eventContextClass, T eventData) {
         Event<Object> event = new Event<>(eventName, eventData);
-        Map<String, EventHandler> namedHandlers = handlers.get(eventContextClass);
-        EventHandler handler = namedHandlers.get(eventName);
-        handler.handle(event);
+        List<EventHandler> handlers = mapOfHandlerHost.get(eventHandlerHostKey(eventContextClass, eventName));
+        for(EventHandler handler : handlers) {
+            handler.handle(event);
+        }
     }
 
+    private static String eventHandlerHostKey(Class<? extends Hackable> eventContextClass, String eventName) {
+        if(eventContextClass == null)
+            eventContextClass = GLOBAL_CONTEXT;
+        return eventContextClass.getCanonicalName() + ":" + eventName;
+    }
 }
