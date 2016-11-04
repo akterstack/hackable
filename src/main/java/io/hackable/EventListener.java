@@ -35,8 +35,10 @@ public class EventListener {
     public static <T> void trigger(String eventName, Class<? extends Hackable> eventContextClass, T... eventData) {
         Event event = new Event(eventName, eventData);
         List<EventHandler> handlers = handlerHostListMap.get(eventHandlerHostKey(eventContextClass, eventName));
-        for(EventHandler handler : handlers) {
-            handler.handle(event);
+        if(handlers != null) {
+            for(EventHandler handler : handlers) {
+                handler.handle(event);
+            }
         }
     }
 
