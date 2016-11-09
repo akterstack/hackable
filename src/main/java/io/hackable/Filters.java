@@ -1,6 +1,7 @@
 package io.hackable;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -12,6 +13,20 @@ public class Filters {
     private static final Map<String, List<Supplier<?>>> filterHandlersMap = new HashMap<>();
 
     private Filters(){
+    }
+
+    public static <R> void onFilter(String filterName, Supplier<R> filterHandler) {
+        applyFilter(filterName, GLOBAL_CONTEXT, filterHandler);
+    }
+
+    public static <R> void onFilter(String filterName, Class<? extends Hackable> contextClass, Supplier<R> filterHandler) {
+        String hostKey = resolveFilterHandlerKey(contextClass, filterName);
+        List<Supplier<?>> existingHandlers = filterHandlersMap.get(hostKey);
+        if(existingHandlers == null) {
+            existingHandlers = new LinkedList<>();
+            filterHandlersMap.put(hostKey, existingHandlers);
+        }
+        existingHandlers.add(filterHandler);
     }
 
     public static <R> R applyFilter(String filterName, R filterableObject) {
