@@ -15,11 +15,11 @@ public class Filters {
     private Filters(){
     }
 
-    public static void addFilter(String filterName, Supplier<?> filterHandler) {
-        addFilter(filterName, GLOBAL_CONTEXT, filterHandler);
+    public static void onFilter(String filterName, Supplier<?> filterHandler) {
+        onFilter(filterName, GLOBAL_CONTEXT, filterHandler);
     }
 
-    public static void addFilter(String filterName, Class<? extends Hackable> contextClass, Supplier<?> filterHandler) {
+    public static void onFilter(String filterName, Class<? extends Hackable> contextClass, Supplier<?> filterHandler) {
         String hostKey = resolveFilterHandlerKey(contextClass, filterName);
         List<Supplier<?>> existingHandlers = filterHandlersMap.get(hostKey);
         if(existingHandlers == null) {
