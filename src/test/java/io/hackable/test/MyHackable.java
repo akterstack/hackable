@@ -18,6 +18,7 @@ public class MyHackable implements Hackable {
 
     public void create() {
         trigger("created", Collections.singletonMap("key", "val"));
+        Events.trigger("created", Collections.singletonMap("key", "val"));
     }
 
 }
