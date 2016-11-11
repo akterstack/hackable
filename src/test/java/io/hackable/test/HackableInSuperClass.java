@@ -1,6 +1,5 @@
 package io.hackable.test;
 
-import io.hackable.Events;
 import org.junit.Test;
 
 public class HackableInSuperClass extends AbstractSample {

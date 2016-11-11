@@ -1,7 +1,5 @@
 package io.hackable.test;
 
-import io.hackable.Flow;
-import io.hackable.Flux;
 import org.junit.Test;
 
 public class FlowTest {

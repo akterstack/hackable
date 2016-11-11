@@ -1,6 +1,5 @@
 package io.hackable.test;
 
-import io.hackable.Events;
 import io.hackable.Hackable;
 
 import java.util.Collections;

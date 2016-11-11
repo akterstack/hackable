@@ -1,6 +1,5 @@
 package io.hackable.test;
 
-import io.hackable.Filters;
 import io.hackable.Hackable;
 import org.junit.Test;
 
