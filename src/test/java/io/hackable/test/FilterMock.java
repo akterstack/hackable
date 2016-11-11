@@ -1,10 +1,8 @@
 package io.hackable.test;
 
-import io.hackable.Hackable;
-
 import java.util.Date;
 
-public class FilterMock implements Hackable {
+public class FilterMock {
 
     private String name;
     private Date date;

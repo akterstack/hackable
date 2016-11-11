@@ -1,23 +1,21 @@
 package io.hackable.test;
 
-import io.hackable.Hackable;
-
 import java.util.Collections;
-import java.util.Map;
 
-public class MyHackable implements Hackable {
+import static io.hackable.Hackable.*;
+
+public class MyHackable {
 
     {
-        Events.on("created", getClass(), event -> {
-            Map map = event.dataAt(0);
-            System.out.println(map);
+        on("created", getClass(), eventData -> {
+            System.out.println(eventData);
         });
-        Events.on("created", event -> System.out.println(event.getData(0)));
+        on("created", event -> System.out.println(event));
     }
 
     public void create() {
         trigger("created", Collections.singletonMap("key", "val"));
-        Events.trigger("created", Collections.singletonMap("key", "val"));
+        trigger("created", Collections.singletonMap("key", "val"));
     }
 
 }
