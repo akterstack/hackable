@@ -15,14 +15,14 @@ public final class Hackable {
     private Hackable(){}
 
     public static <T> void on(String eventName, Consumer<T> eventHandler) {
-        doOn(resolveHackableHandlerKey(eventName, null), eventHandler);
+        _on(resolveHackableHandlerKey(eventName, null), eventHandler);
     }
 
     public static <T> void on(String eventName, Class contextClass, Consumer<T> eventHandler) {
-        doOn(resolveHackableHandlerKey(eventName, contextClass), eventHandler);
+        _on(resolveHackableHandlerKey(eventName, contextClass), eventHandler);
     }
 
-    private static <T> void doOn(String eventHostKey, Consumer<T> eventHandler) {
+    private static <T> void _on(String eventHostKey, Consumer<T> eventHandler) {
         List<Consumer<?>> existingHandlers = eventHandlersMap.get(eventHostKey);
         if(existingHandlers == null) {
             existingHandlers = new ArrayList<>();
@@ -32,14 +32,14 @@ public final class Hackable {
     }
 
     public static <T> void trigger(String eventName, T eventData) {
-        doTrigger(resolveHackableHandlerKey(eventName, null), eventData);
+        _trigger(resolveHackableHandlerKey(eventName, null), eventData);
     }
 
     public static <T> void trigger(String eventName, Class contextClass, T eventData) {
-        doTrigger(resolveHackableHandlerKey(eventName, contextClass), eventData);
+        _trigger(resolveHackableHandlerKey(eventName, contextClass), eventData);
     }
 
-    private static <T> void doTrigger(String eventHostKey, T eventData) {
+    private static <T> void _trigger(String eventHostKey, T eventData) {
         List<Consumer<?>> consumers = eventHandlersMap.get(eventHostKey);
         if(consumers != null) {
             for(Consumer<?> consumer : consumers) {
@@ -49,14 +49,14 @@ public final class Hackable {
     }
 
     public static <R> void onFilter(String filterName, Filter<R> filterHandler) {
-        doOnFilter(resolveHackableHandlerKey(filterName, null), filterHandler);
+        _onFilter(resolveHackableHandlerKey(filterName, null), filterHandler);
     }
 
     public static <R> void onFilter(String filterName, Class contextClass, Filter<R> filterHandler) {
-        doOnFilter(resolveHackableHandlerKey(filterName, contextClass), filterHandler);
+        _onFilter(resolveHackableHandlerKey(filterName, contextClass), filterHandler);
     }
 
-    private static <R> void doOnFilter(String filterHostKey, Filter<R> filterHandler) {
+    private static <R> void _onFilter(String filterHostKey, Filter<R> filterHandler) {
         List<Filter<?>> existingHandlers = filterHandlersMap.get(filterHostKey);
         if(existingHandlers == null) {
             existingHandlers = new LinkedList<>();
@@ -66,14 +66,14 @@ public final class Hackable {
     }
 
     public static <R> R applyFilter(String filterName, R filterableObject) {
-        return doApplyFilter(resolveHackableHandlerKey(filterName, null), filterableObject);
+        return _applyFilter(resolveHackableHandlerKey(filterName, null), filterableObject);
     }
 
     public static <R> R applyFilter(String filterName, Class contextClass, R filterableObject) {
-        return doApplyFilter(resolveHackableHandlerKey(filterName, contextClass), filterableObject);
+        return _applyFilter(resolveHackableHandlerKey(filterName, contextClass), filterableObject);
     }
 
-    private static <R> R doApplyFilter(String filterHostKey, R filterableObject) {
+    private static <R> R _applyFilter(String filterHostKey, R filterableObject) {
         List<Filter<?>> filters = filterHandlersMap.get(filterHostKey);
         if(filters != null) {
             R fobj = filterableObject;
