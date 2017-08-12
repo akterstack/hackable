@@ -5,25 +5,24 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public final class Hackable {
 
-    private static final Map<String, List<Consumer<?>>> eventHandlersMap = new HashMap<>();
+    private static final Map<String, List<Handler<?>>> eventHandlersMap = new HashMap<>();
     private static final Map<String, List<Filter<?>>> filterHandlersMap = new HashMap<>();
 
     private Hackable(){}
 
-    public static <T> void on(String eventName, Consumer<T> eventHandler) {
+    public static <T> void on(String eventName, Handler<T> eventHandler) {
         _on(resolveHackableHandlerKey(eventName, null), eventHandler);
     }
 
-    public static <T> void on(String eventName, Class contextClass, Consumer<T> eventHandler) {
+    public static <T> void on(String eventName, Class contextClass, Handler<T> eventHandler) {
         _on(resolveHackableHandlerKey(eventName, contextClass), eventHandler);
     }
 
-    private static <T> void _on(String eventHostKey, Consumer<T> eventHandler) {
-        List<Consumer<?>> existingHandlers = eventHandlersMap.get(eventHostKey);
+    private static <T> void _on(String eventHostKey, Handler<T> eventHandler) {
+        List<Handler<?>> existingHandlers = eventHandlersMap.get(eventHostKey);
         if(existingHandlers == null) {
             existingHandlers = new ArrayList<>();
             eventHandlersMap.put(eventHostKey, existingHandlers);
@@ -40,10 +39,10 @@ public final class Hackable {
     }
 
     private static <T> void _trigger(String eventHostKey, T eventData) {
-        List<Consumer<?>> consumers = eventHandlersMap.get(eventHostKey);
+        List<Handler<?>> consumers = eventHandlersMap.get(eventHostKey);
         if(consumers != null) {
-            for(Consumer<?> consumer : consumers) {
-                ((Consumer<T>)consumer).accept(eventData);
+            for(Handler<?> consumer : consumers) {
+                ((Handler<T>)consumer).handle(eventData);
             }
         }
     }
