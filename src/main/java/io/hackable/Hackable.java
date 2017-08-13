@@ -11,7 +11,7 @@ public final class Hackable {
     private static final Map<String, List<Handler<?>>> eventHandlersMap = new HashMap<>();
     private static final Map<String, List<Filter<?>>> filterHandlersMap = new HashMap<>();
 
-    private Hackable(){}
+    private Hackable() {}
 
     public static <T> void on(String eventName, Handler<T> eventHandler) {
         _on(resolveHackableHandlerKey(eventName, null), eventHandler);
@@ -23,7 +23,7 @@ public final class Hackable {
 
     private static <T> void _on(String eventHostKey, Handler<T> eventHandler) {
         List<Handler<?>> existingHandlers = eventHandlersMap.get(eventHostKey);
-        if(existingHandlers == null) {
+        if (existingHandlers == null) {
             existingHandlers = new ArrayList<>();
             eventHandlersMap.put(eventHostKey, existingHandlers);
         }
@@ -40,8 +40,8 @@ public final class Hackable {
 
     private static <T> void _trigger(String eventHostKey, T eventData) {
         List<Handler<?>> consumers = eventHandlersMap.get(eventHostKey);
-        if(consumers != null) {
-            for(Handler<?> consumer : consumers) {
+        if (consumers != null) {
+            for (Handler<?> consumer : consumers) {
                 ((Handler<T>)consumer).handle(eventData);
             }
         }
@@ -57,7 +57,7 @@ public final class Hackable {
 
     private static <R> void _onFilter(String filterHostKey, Filter<R> filterHandler) {
         List<Filter<?>> existingHandlers = filterHandlersMap.get(filterHostKey);
-        if(existingHandlers == null) {
+        if (existingHandlers == null) {
             existingHandlers = new LinkedList<>();
             filterHandlersMap.put(filterHostKey, existingHandlers);
         }
@@ -74,9 +74,9 @@ public final class Hackable {
 
     private static <R> R _applyFilter(String filterHostKey, R filterableObject) {
         List<Filter<?>> filters = filterHandlersMap.get(filterHostKey);
-        if(filters != null) {
+        if (filters != null) {
             R fobj = filterableObject;
-            for(Filter f : filters) {
+            for (Filter f : filters) {
                 fobj = (R)f.filter(fobj);
             }
             return fobj;
