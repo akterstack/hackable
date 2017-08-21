@@ -28,8 +28,8 @@ public interface Hackable {
     trigger(resolveHostKeyName(actionName), actionData);
   }
 
-  default <T> T _trigger(String actionName, T actionData, Consumer<T> consumer) {
-    return trigger(resolveHostKeyName(actionName), actionData, consumer);
+  default <T> void _trigger(String actionName, T actionData, Consumer<T> consumer) {
+    trigger(resolveHostKeyName(actionName), actionData, consumer);
   }
 
   default <T, R> R _trigger(String actionName, T actionData, Function<T, R> function) {
@@ -45,7 +45,11 @@ public interface Hackable {
   }
 
   default String resolveHostKeyName(String name) {
-    return name + getClass().getSimpleName();
+    return name + ":" + getHackableClassName();
+  }
+
+  default String getHackableClassName() {
+    return getClass().getSimpleName();
   }
 
   static <T> void before(String actionName, Handler<T> actionHandler) {
@@ -69,11 +73,10 @@ public interface Hackable {
     trigger(Context.AFTER, actionName, actionData);
   }
 
-  static <T> T trigger(String actionName, T actionData, Consumer<T> consumer) {
+  static <T> void trigger(String actionName, T actionData, Consumer<T> consumer) {
     trigger(BEFORE, actionName, actionData);
     consumer.accept(actionData);
     trigger(AFTER, actionName, actionData);
-    return actionData;
   }
 
   static <T, R> R trigger(String actionName, T actionData, Function<T, R> function) {
