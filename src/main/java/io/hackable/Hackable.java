@@ -6,88 +6,169 @@ import java.util.function.Function;
 import static io.hackable.HackEngine.*;
 import static io.hackable.HackEngine.Context.*;
 
-public interface Hackable {
+public interface Hackable<K> {
 
-  default <T> void _before(String actionName, Handler<T> actionHandler) {
-    before(resolveHostKeyName(actionName), actionHandler);
+  default <H> void _before(K actionName, Handler<H> actionHandler) {
+    before(resolveHostName(actionName), actionHandler);
   }
 
-  default <T> void _after(String actionName, Handler<T> actionHandler) {
-    after(resolveHostKeyName(actionName), actionHandler);
+  default <H> void _after(K actionName, Handler<H> actionHandler) {
+    after(resolveHostName(actionName), actionHandler);
   }
 
-  default <T> void _on(String actionName, Handler<T> actionHandler) {
+  /* alias method of _after() */
+  default <H> void _on(K actionName, Handler<H> actionHandler) {
     _after(actionName, actionHandler);
   }
 
-  default <T> void _trigger(Context context, String actionName, T actionData) {
-    trigger(context, resolveHostKeyName(actionName), actionData);
+  default <H> void _trigger(Context context, K actionName, H actionData) {
+    trigger(context, resolveHostName(actionName), actionData);
   }
 
-  default <T> void _trigger(String actionName, T actionData) {
-    trigger(resolveHostKeyName(actionName), actionData);
+  default <H> void _trigger(K actionName, H actionData) {
+    trigger(resolveHostName(actionName), actionData);
   }
 
-  default <T> void _trigger(String actionName, T actionData, Consumer<T> consumer) {
-    trigger(resolveHostKeyName(actionName), actionData, consumer);
+  default <H> void _trigger(K actionName, H actionData, Consumer<H> consumer) {
+    trigger(resolveHostName(actionName), actionData, consumer);
   }
 
-  default <T, R> R _trigger(String actionName, T actionData, Function<T, R> function) {
-    return trigger(resolveHostKeyName(actionName), actionData, function);
+  default <H, R> R _trigger(K actionName, H actionData, Function<H, R> function) {
+    return trigger(resolveHostName(actionName), actionData, function);
   }
 
-  default <R> void _onFilter(String filterName, Filter<R> filterHandler) {
-    registerFilterHandler(resolveHostKeyName(filterName), filterHandler);
+  default <R> void _onFilter(K filterName, Filter<R> filterHandler) {
+    registerFilterHandler(resolveHostName(filterName), filterHandler);
   }
 
-  default <R> R _filter(String filterName, R filterableObject) {
-    return applyFilter(resolveHostKeyName(filterName), filterableObject);
+  default <R> R _filter(K filterName, R filterableObject) {
+    return applyFilter(resolveHostName(filterName), filterableObject);
   }
 
-  default String resolveHostKeyName(String name) {
-    return name + ":" + getHackableClassName();
+  default String resolveHostName(K key) {
+    return hostKeyToString(key) + ":" + getHackableClassName();
+  }
+
+  default String hostKeyToString(K hostKey) {
+    return hostKey.toString();
   }
 
   default String getHackableClassName() {
     return getClass().getSimpleName();
   }
 
-  static <T> void before(String actionName, Handler<T> actionHandler) {
+  /* --------------------------- Static Methods --------------------------------- */
+
+  static <K, H> void before(K actionName, Handler<H> actionHandler) {
+    before(actionName.toString(), actionHandler);
+  }
+
+  static <H> void before(Enum actionName, Handler<H> actionHandler) {
+    before(actionName.toString(), actionHandler);
+  }
+
+  static <H> void before(String actionName, Handler<H> actionHandler) {
     registerActionHandler(BEFORE, actionName, actionHandler);
   }
 
-  static <T> void after(String actionName, Handler<T> actionHandler) {
+  static <K, H> void after(K actionName, Handler<H> actionHandler) {
+    after(actionName.toString(), actionHandler);
+  }
+
+  static <H> void after(Enum actionName, Handler<H> actionHandler) {
+    after(actionName.toString(), actionHandler);
+  }
+
+  static <H> void after(String actionName, Handler<H> actionHandler) {
     registerActionHandler(AFTER, actionName, actionHandler);
   }
 
-  /* alias method of after() */
-  static <T> void on(String actionName, Handler<T> actionHandler) {
+  /* alias method of after(K, Handler) */
+  static <K, H> void on(K actionName, Handler<H> actionHandler) {
     after(actionName, actionHandler);
   }
 
-  static <T> void trigger(Context context, String actionName, T actionData) {
+  /* alias method of after(Enum, Handler) */
+  static <H> void on(Enum actionName, Handler<H> actionHandler) {
+    after(actionName, actionHandler);
+  }
+
+  /* alias method of after(String, Handler) */
+  static <H> void on(String actionName, Handler<H> actionHandler) {
+    after(actionName, actionHandler);
+  }
+
+  static <K, H> void trigger(Context context, K actionName, H actionData) {
+    trigger(context, actionName.toString(), actionData);
+  }
+
+  static <H> void trigger(Context context, Enum actionName, H actionData) {
+    doAction(context, actionName.toString(), actionData);
+  }
+
+  static <H> void trigger(Context context, String actionName, H actionData) {
     doAction(context, actionName, actionData);
   }
 
-  static <T> void trigger(String actionName, T actionData) {
+  static <K, P> void trigger(K actionName, P actionData) {
+    trigger(actionName.toString(), actionData);
+  }
+
+  static <P> void trigger(Enum actionName, P actionData) {
+    trigger(actionName.toString(), actionData);
+  }
+
+  static <P> void trigger(String actionName, P actionData) {
     trigger(Context.AFTER, actionName, actionData);
   }
 
-  static <T> void trigger(String actionName, T actionData, Consumer<T> consumer) {
+  static <K, P> void trigger(K actionName, P actionData, Consumer<P> consumer) {
+    trigger(actionName.toString(), actionData, consumer);
+  }
+
+  static <P> void trigger(Enum actionName, P actionData, Consumer<P> consumer) {
+    trigger(actionName.toString(), actionData, consumer);
+  }
+
+  static <P> void trigger(String actionName, P actionData, Consumer<P> consumer) {
     trigger(BEFORE, actionName, actionData);
     consumer.accept(actionData);
     trigger(AFTER, actionName, actionData);
   }
 
-  static <T, R> R trigger(String actionName, T actionData, Function<T, R> function) {
+  static <K, P, R> R trigger(K actionName, P actionData, Function<P, R> function) {
+    return trigger(actionName.toString(), actionData, function);
+  }
+
+  static <P, R> R trigger(Enum actionName, P actionData, Function<P, R> function) {
+    return trigger(actionName.toString(), actionData, function);
+  }
+
+  static <P, R> R trigger(String actionName, P actionData, Function<P, R> function) {
     trigger(BEFORE, actionName, actionData);
     R result = function.apply(actionData);
     trigger(AFTER, actionName, result);
     return result;
   }
 
+  static <K, R> void onFilter(K filterName, Filter<R> filterHandler) {
+    onFilter(filterName.toString(), filterHandler);
+  }
+
+  static <R> void onFilter(Enum filterName, Filter<R> filterHandler) {
+    onFilter(filterName.toString(), filterHandler);
+  }
+
   static <R> void onFilter(String filterName, Filter<R> filterHandler) {
     registerFilterHandler(filterName, filterHandler);
+  }
+
+  static <K, R> R filter(K filterName, R filterableObject) {
+    return filter(filterName.toString(), filterableObject);
+  }
+
+  static <R> R filter(Enum filterName, R filterableObject) {
+    return filter(filterName.toString(), filterableObject);
   }
 
   static <R> R filter(String filterName, R filterableObject) {

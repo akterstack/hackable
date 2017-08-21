@@ -7,10 +7,10 @@ import static io.hackable.Hackable.*;
 public class MyHackable {
 
     {
-        on("created", getClass(), eventData -> {
+        /*on("created", getClass(), eventData -> {
             System.out.println(eventData);
         });
-        on("created", event -> System.out.println(event));
+        on("created", event -> System.out.println(event));*/
     }
 
     public void create() {
