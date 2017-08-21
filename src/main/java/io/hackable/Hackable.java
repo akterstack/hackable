@@ -1,6 +1,7 @@
 package io.hackable;
 
-import java.util.function.Supplier;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static io.hackable.HackEngine.*;
 import static io.hackable.HackEngine.Context.*;
@@ -27,19 +28,20 @@ public interface Hackable {
     trigger(resolveHostKeyName(actionName), actionData);
   }
 
+  default <T> T _trigger(String actionName, T actionData, Consumer<T> consumer) {
+    return trigger(resolveHostKeyName(actionName), actionData, consumer);
+  }
+
+  default <T, R> R _trigger(String actionName, T actionData, Function<T, R> function) {
+    return trigger(resolveHostKeyName(actionName), actionData, function);
+  }
+
   default <R> void _onFilter(String filterName, Filter<R> filterHandler) {
     registerFilterHandler(resolveHostKeyName(filterName), filterHandler);
   }
 
   default <R> R _filter(String filterName, R filterableObject) {
     return applyFilter(resolveHostKeyName(filterName), filterableObject);
-  }
-
-  default <T> T _wrap(String actionName, T actionData, Supplier<T> supplier) {
-    _trigger(BEFORE, actionName, actionData);
-    T result = supplier.get();
-    _trigger(AFTER, actionName, result);
-    return result;
   }
 
   default String resolveHostKeyName(String name) {
@@ -67,19 +69,26 @@ public interface Hackable {
     trigger(Context.AFTER, actionName, actionData);
   }
 
+  static <T> T trigger(String actionName, T actionData, Consumer<T> consumer) {
+    trigger(BEFORE, actionName, actionData);
+    consumer.accept(actionData);
+    trigger(AFTER, actionName, actionData);
+    return actionData;
+  }
+
+  static <T, R> R trigger(String actionName, T actionData, Function<T, R> function) {
+    trigger(BEFORE, actionName, actionData);
+    R result = function.apply(actionData);
+    trigger(AFTER, actionName, result);
+    return result;
+  }
+
   static <R> void onFilter(String filterName, Filter<R> filterHandler) {
     registerFilterHandler(filterName, filterHandler);
   }
 
   static <R> R filter(String filterName, R filterableObject) {
     return applyFilter(filterName, filterableObject);
-  }
-
-  static <T> T wrap(String actionName, T actionData, Supplier<T> supplier) {
-    trigger(BEFORE, actionName, actionData);
-    T result = supplier.get();
-    trigger(AFTER, actionName, result);
-    return result;
   }
 
 }
