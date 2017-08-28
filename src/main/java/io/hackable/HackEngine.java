@@ -9,22 +9,33 @@ import java.util.Map;
 
 public final class HackEngine {
 
-  public enum Context {BEFORE, AFTER}
-
   private static final Map<String, List<Handler<?>>> actionHandlersHostMap = new HashMap<>();
   private static final Map<String, List<Filter<?>>> filterHandlersHostMap = new HashMap<>();
 
   private HackEngine() {}
 
-  public static <T> void registerActionHandler(Context context, String actionName, Handler<T> actionHandler) {
+  public static <T> void registerActionHandler(String actionName, Handler<T> actionHandler) {
+    registerActionHandler(actionName, actionHandler, actionHandlersHostMap);
+  }
+
+  public static <T> void registerActionHandler(
+      String actionName,
+      Handler<T> actionHandler,
+      Map<String, List<Handler<?>>> actionHandlersHostMap) {
+
     List<Handler<?>> existingHandlers =
         actionHandlersHostMap
-            .computeIfAbsent(resolveActionHostKey(context, actionName), k -> new ArrayList<>());
+            .computeIfAbsent(actionName, k -> new ArrayList<>());
     existingHandlers.add(actionHandler);
   }
 
-  public static <T> void doAction(Context context, String actionName, T actionData) {
-    List<Handler<?>> actions = actionHandlersHostMap.get(resolveActionHostKey(context, actionName));
+  public static <T> void doAction(String actionName, T actionData) {
+    doAction(actionName, actionData, actionHandlersHostMap);
+  }
+
+  public static <T> void doAction(
+      String actionName, T actionData, Map<String, List<Handler<?>>> actionHandlersHostMap) {
+    List<Handler<?>> actions = actionHandlersHostMap.get(actionName);
     if(actions != null) {
       for(Handler action : actions) {
         action.handle(actionData);
@@ -33,6 +44,11 @@ public final class HackEngine {
   }
 
   public static <R> void registerFilterHandler(String filterName, Filter<R> filterHandler) {
+    registerFilterHandler(filterName, filterHandler, filterHandlersHostMap);
+  }
+
+  public static <R> void registerFilterHandler(
+      String filterName, Filter<R> filterHandler, Map<String, List<Filter<?>>> filterHandlersHostMap) {
     String filterHostKey = filterName.toLowerCase();
     List<Filter<?>> existingHandlers =
         filterHandlersHostMap.computeIfAbsent(filterHostKey, k -> new LinkedList<>());
@@ -40,6 +56,12 @@ public final class HackEngine {
   }
 
   public static <R> R applyFilter(String filterName, R filterableObject) {
+    return applyFilter(filterName, filterableObject, filterHandlersHostMap);
+  }
+
+  public static <R> R applyFilter(
+      String filterName, R filterableObject, Map<String, List<Filter<?>>> filterHandlersHostMap) {
+
     List<Filter<?>> filters = filterHandlersHostMap.get(filterName.toLowerCase());
     if(filters != null) {
       R fobj = filterableObject;
@@ -49,10 +71,6 @@ public final class HackEngine {
       return fobj;
     }
     return filterableObject;
-  }
-
-  private static String resolveActionHostKey(Context context, String actionName) {
-    return context.name().toLowerCase() + ":" + actionName.toLowerCase();
   }
 
 }
