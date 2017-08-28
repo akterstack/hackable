@@ -26,36 +26,36 @@ public interface Hackable<K> {
 
   /* default context for '_on' is 'AFTER' */
   default <P> void _on(K actionName, Handler<P> actionHandler) {
-    registerActionHandler(resolveActionHostKey(AFTER, actionName), actionHandler, getActionHandlerHostMap());
+    registerActionHandler(resolveActionHostKey(AFTER, resolveHostName(actionName)), actionHandler, getActionHandlerHostMap());
   }
 
   default <P> void _trigger(Context context, K actionName, P actionData) {
-    doAction(resolveActionHostKey(context, actionName), actionData, getActionHandlerHostMap());
+    doAction(resolveActionHostKey(context, resolveHostName(actionName)), actionData, getActionHandlerHostMap());
   }
 
   default <P> void _trigger(K actionName, P actionData) {
-    doAction(resolveActionHostKey(AFTER, actionName), actionData, getActionHandlerHostMap());
+    doAction(resolveActionHostKey(AFTER, resolveHostName(actionName)), actionData, getActionHandlerHostMap());
   }
 
-  default <P> void _trigger(Object actionName, P actionData, Consumer<P> consumer) {
-    doAction(resolveActionHostKey(BEFORE, actionName), actionData, getActionHandlerHostMap());
+  default <P> void _trigger(K actionName, P actionData, Consumer<P> consumer) {
+    doAction(resolveActionHostKey(BEFORE, resolveHostName(actionName)), actionData, getActionHandlerHostMap());
     consumer.accept(actionData);
-    doAction(resolveActionHostKey(AFTER, actionName), actionData, getActionHandlerHostMap());
+    doAction(resolveActionHostKey(AFTER, resolveHostName(actionName)), actionData, getActionHandlerHostMap());
   }
 
-  default <P, R> R _trigger(Object actionName, P actionData, Function<P, R> function) {
-    doAction(resolveActionHostKey(BEFORE, actionName), actionData, getActionHandlerHostMap());
+  default <P, R> R _trigger(K actionName, P actionData, Function<P, R> function) {
+    doAction(resolveActionHostKey(BEFORE, resolveHostName(actionName)), actionData, getActionHandlerHostMap());
     R result = function.apply(actionData);
-    doAction(resolveActionHostKey(AFTER, actionName), actionData, getActionHandlerHostMap());
+    doAction(resolveActionHostKey(AFTER, resolveHostName(actionName)), actionData, getActionHandlerHostMap());
     return result;
   }
 
   default <R> void _onFilter(K filterName, Filter<R> filterHandler) {
-    registerFilterHandler(resolveHostName(filterName), filterHandler, getFilterHandlerHostMap());
+    registerFilterHandler(resolveFilterHostKey(resolveHostName(filterName)), filterHandler, getFilterHandlerHostMap());
   }
 
   default <R> R _filter(K filterName, R filterableObject) {
-    return applyFilter(resolveHostName(filterName), filterableObject, getFilterHandlerHostMap());
+    return applyFilter(resolveFilterHostKey(resolveHostName(filterName)), filterableObject, getFilterHandlerHostMap());
   }
 
   default String resolveHostName(K key) {
@@ -67,7 +67,7 @@ public interface Hackable<K> {
   }
 
   default String getHackableClassName() {
-    return getClass().getSimpleName();
+    return getClass().getName();
   }
 
   Map<String, List<Handler<?>>> getActionHandlerHostMap();
@@ -128,6 +128,11 @@ public interface Hackable<K> {
 
   static String resolveFilterHostKey(Object hostKey) {
     return hostKey.toString().toLowerCase();
+  }
+
+  static Hackable forClass(Class<? extends Hackable> hackableClass)
+      throws IllegalAccessException, InstantiationException {
+    return hackableClass.newInstance();
   }
 
 }
