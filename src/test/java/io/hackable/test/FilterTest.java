@@ -2,7 +2,7 @@ package io.hackable.test;
 
 import org.junit.Test;
 
-import static io.hackable.Hackable.*;
+import static hackable.Hackable.*;
 
 public class FilterTest {
 

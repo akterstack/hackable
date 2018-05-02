@@ -1,4 +1,4 @@
-package io.hackable;
+package hackable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,36 +9,36 @@ import java.util.Map;
 
 public final class HackEngine {
 
-  private static final Map<String, List<Handler<?>>> actionHandlersHostMap = new HashMap<>();
+  private static final Map<String, List<EventHandler<?>>> eventHandlersHostMap = new HashMap<>();
   private static final Map<String, List<Filter<?>>> filterHandlersHostMap = new HashMap<>();
 
   private HackEngine() {}
 
-  public static <T> void registerActionHandler(String actionName, Handler<T> actionHandler) {
-    registerActionHandler(actionName, actionHandler, actionHandlersHostMap);
+  public static <T> void registerEventHandler(String eventName, EventHandler<T> eventEventHandler) {
+    registerEventHandler(eventName, eventEventHandler, eventHandlersHostMap);
   }
 
-  public static <T> void registerActionHandler(
-      String actionName,
-      Handler<T> actionHandler,
-      Map<String, List<Handler<?>>> actionHandlersHostMap) {
+  public static <T> void registerEventHandler(
+      String eventName,
+      EventHandler<T> eventEventHandler,
+      Map<String, List<EventHandler<?>>> eventHandlersHostMap) {
 
-    List<Handler<?>> existingHandlers =
-        actionHandlersHostMap
-            .computeIfAbsent(actionName, k -> new ArrayList<>());
-    existingHandlers.add(actionHandler);
+    List<EventHandler<?>> existingEventHandlers =
+        eventHandlersHostMap
+            .computeIfAbsent(eventName, k -> new ArrayList<>());
+    existingEventHandlers.add(eventEventHandler);
   }
 
-  public static <T> void doAction(String actionName, T actionData) {
-    doAction(actionName, actionData, actionHandlersHostMap);
+  public static <T> void doEvent(String eventName, T eventData) {
+    doEvent(eventName, eventData, eventHandlersHostMap);
   }
 
-  public static <T> void doAction(
-      String actionName, T actionData, Map<String, List<Handler<?>>> actionHandlersHostMap) {
-    List<Handler<?>> actions = actionHandlersHostMap.get(actionName);
-    if(actions != null) {
-      for(Handler action : actions) {
-        action.handle(actionData);
+  public static <T> void doEvent(
+      String eventName, T eventData, Map<String, List<EventHandler<?>>> eventHandlersHostMap) {
+    List<EventHandler<?>> events = eventHandlersHostMap.get(eventName);
+    if(events != null) {
+      for(EventHandler event : events) {
+        event.handle(eventData);
       }
     }
   }

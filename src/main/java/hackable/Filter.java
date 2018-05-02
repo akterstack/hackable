@@ -1,4 +1,4 @@
-package io.hackable;
+package hackable;
 
 @FunctionalInterface
 public interface Filter<R> {

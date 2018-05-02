@@ -2,7 +2,7 @@ package io.hackable.test;
 
 import java.util.Collections;
 
-import static io.hackable.Hackable.*;
+import static hackable.Hackable.*;
 
 public abstract class AbstractSample {
 
